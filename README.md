@@ -1,4 +1,4 @@
-# Demo Repository of Learn R with Group 
+# Resources from Learn R with Group 
 
 Week 1: [Slides](https://rugnepal.github.io/learnRgroup/week_1/slides.html)
 
