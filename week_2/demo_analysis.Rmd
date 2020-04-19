@@ -34,7 +34,7 @@ library(tidyverse)
 Here, we load extracted csv data (pdf) from government site.
 
 ```{r}
-nepal_data <- read_csv("nepal_data.csv")
+nepal_data <- read_csv("https://raw.githubusercontent.com/rugnepal/learnRgroup/master/week_2/nepal_data.csv")
 nepal_data
 ```
 
@@ -70,7 +70,7 @@ ggplot(clean_covidnp_data, aes(x = cases, y = number)) +
 ### SAARC - Data Load 
 
 ```{r}
-saarc <- read_csv("saarc_data.csv")
+saarc <- read_csv("https://raw.githubusercontent.com/rugnepal/learnRgroup/master/week_2/saarc_data.csv")
 ```
 
 ```{r}

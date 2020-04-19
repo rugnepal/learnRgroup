@@ -1,0 +1,49 @@
+---
+title: "Custom Color Line Charts"
+author: "Binod Jung Bogati"
+date: "4/19/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+```
+
+### Load Library
+
+```{r}
+library(tidyverse)
+```
+
+
+### Create data frame
+
+```{r}
+SN <- 1:5
+A1 <- c(2, 3, 15, 16, 17)
+B1 <- c(4, 5, 20, 17, 18)
+C1 <- c(3, 17, 26, 48, 26)
+  
+data <- data.frame(SN, A1, B1, C1)
+```
+
+### Tidy Data
+
+```{r}
+n <- data %>% pivot_longer(cols = 3:4, 
+                      names_to = "val", 
+                      values_to = "no")
+```
+
+### Visualize
+
+```{r}
+ggplot(n, aes(x=SN,y=no, group=val, color = as.factor(val))) +
+  geom_line(size=1)+ 
+  scale_color_manual(values=c("red", "green" ,"black"))
+```
+
