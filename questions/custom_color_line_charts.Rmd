@@ -34,7 +34,7 @@ data <- data.frame(SN, A1, B1, C1)
 ### Tidy Data
 
 ```{r}
-n <- data %>% pivot_longer(cols = 3:4, 
+n <- data %>% pivot_longer(cols = 2:4, 
                       names_to = "val", 
                       values_to = "no")
 ```
