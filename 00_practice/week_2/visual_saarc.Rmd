@@ -1,0 +1,59 @@
+---
+title: "Untitled"
+author: "Binod"
+date: "4/18/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+```
+
+
+### Summary of Nepal
+
+```{r}
+str(nepal_data)
+
+nepal_data
+```
+
+### Data Transform
+
+```{r}
+clean_df <- nepal_data %>% 
+  select(1:7) %>% 
+  pivot_longer(cols = 1:7, 
+               names_to = "cases", 
+               values_to = "number")  %>% 
+  mutate(cases = fct_reorder(cases, number)) %>% 
+  arrange(desc(cases))
+
+write_csv(clean_df, "nepal_clean_df.csv")
+```
+
+
+## Visualize
+
+```{r}
+ggplot(clean_df, 
+       aes(x = cases, y = number)) +
+  geom_bar(stat = "identity") +
+  coord_flip()
+```
+
+## SAARC
+
+```{r}
+saarc_table
+```
+
+
+

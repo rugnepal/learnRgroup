@@ -1,0 +1,138 @@
+---
+title: "Learning R with Group"
+subtitle: "⚔<br/>RUGNepal"
+date: "`r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    css: ["style.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+layout: true
+
+<div class="my-header"></div>
+
+<div class="my-footer"><span>
+<a href="https://www.facebook.com/rugnepal">
+<img src="https://www.rugnepal.org/wp-content/uploads/2018/08/Rnepaldark.png" height="60px"></a></span></div> 
+
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+---
+class: center, middle
+
+# Welcome Everyone
+
+## 
+
+---
+class: left, top 
+
+# About me
+
+<br>
+<br>
+
+- Binod Jung Bogati
+
+--
+
+- Organizer @ R User Group Nepal
+
+--
+
+- Data Science @ Numeric Mind 
+
+---
+class: left, top
+
+# What is Data Science?
+
+<br>
+
+--
+
+An exciting inter-discipline that allows you to turn raw data into following:
+
+- understandable
+- insightful
+- knowledgeable
+
+---
+class: center, middle
+
+# Data Science Workflow
+
+--
+
+<img src="https://d33wubrfki0l68.cloudfront.net/571b056757d68e6df81a3e3853f54d3c76ad6efc/32d37/diagrams/data-science.png">
+
+---
+class: center, middle
+
+# Data Science Tools
+
+--
+
+<img src="http://www.seec.uct.ac.za/sites/default/files/image_tool/images/330/tidy_workflow.png"  width="70%">
+---
+
+class: top, left
+
+# What we'll learn
+
+- Explore 
+
+- Program 
+
+- Wrangle
+
+---
+
+# Visualization - Explore
+
+--
+
+```{r}
+library(ggplot2)
+```
+--
+
+```{r fig.height=5, fig.width=8}
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(aes(color = class))
+```
+
+---
+
+
+# Tidy Data Principle 
+--
+
+- Each variable must have its own column.
+- Each observation must have its own row.
+- Each value must have its own cell.
+
+
+<img src="
+https://d33wubrfki0l68.cloudfront.net/6f1ddb544fc5c69a2478e444ab8112fb0eea23f8/91adc/images/tidy-1.png" width="100%">
+
+
+---
+
+# Learning Resources
+--
+
+<a href="https://r4ds.had.co.nz/">
+<img src="https://d33wubrfki0l68.cloudfront.net/b88ef926a004b0fce72b2526b0b5c4413666a4cb/24a30/cover.png" width="40%"> </a>
+
+---
+
