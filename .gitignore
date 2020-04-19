@@ -22,6 +22,8 @@
 *.utf8.md
 *.knit.md
 
+*.Rproj
+
 # R Environment Variables
 .Renviron
 
