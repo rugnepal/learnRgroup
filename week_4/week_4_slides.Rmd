@@ -1,0 +1,87 @@
+---
+title: "Week 4: Learning R with Group"
+subtitle: "⚔<br/>RUGNepal"
+date: "`r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    css: ["style.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+layout: true
+
+<div class="my-header"></div>
+
+<div class="my-footer"><span>
+<a href="https://www.facebook.com/rugnepal">
+<img src="https://www.rugnepal.org/wp-content/uploads/2018/08/Rnepaldark.png" height="60px"></a></span></div> 
+
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+---
+class: center, middle
+
+# Welcome Everyone
+
+## 
+
+---
+class: left, top 
+
+# About me
+
+<br>
+<br>
+
+- Binod Jung Bogati
+
+--
+
+- Organizer @ R User Group Nepal
+
+--
+
+- Data Scientist @ Numeric Mind 
+
+---
+class: left, top
+
+# Today's Agenda
+
+- Covid-19 Visualization (Nepal/Outside)
+
+- Working with Survey Data
+
+---
+
+## For Loops (We don't use)
+
+--
+
+```{r}
+## Loops (Preview)
+
+days <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
+count <- c("first", "second", "third", "fourth", "fifth", "sixth", "seventh")
+
+for (i in 1:7){
+  print(paste(days[i], "is", count[i], "day of week"))
+  }
+```
+
+---
+
+## Learning Resources
+--
+
+<a href="https://r4ds.had.co.nz/">
+<img src="https://d33wubrfki0l68.cloudfront.net/b88ef926a004b0fce72b2526b0b5c4413666a4cb/24a30/cover.png" width="40%"> </a>
+---
