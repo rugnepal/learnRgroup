@@ -1,0 +1,345 @@
+---
+title: "Learning R with Group - Week 4"
+author: "Binod"
+date: "4/26/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+```
+
+## Animal Survey Data set
+
+```{r}
+download.file(url="https://ndownloader.figshare.com/files/2292169",
+              destfile = "data/survey.csv")
+```
+
+
+Column |	Description
+--- | ---
+record_id	 | Unique id for the observation
+month	| month of observation
+day	| day of observation
+year	| year of observation
+plot_id	| ID of a particular plot
+species_id	| 2-letter code
+sex	| sex of animal (“M”, “F”)
+hindfoot_length	| length of the hindfoot in mm
+weight	| weight of the animal in grams
+genus	| genus of animal
+species	| species of animal
+taxon	| e.g. Rodent, Reptile, Bird, Rabbit
+plot_type	| type of plot
+
+```{r}
+library(readr)
+
+surveys <- read_csv("data/survey.csv")
+```
+
+## Structure
+
+```{r}
+str(surveys)
+```
+
+## Head / Tail
+
+```{r}
+head(surveys)
+```
+
+## Summary
+
+```{r}
+summary(surveys)
+```
+
+## Factors
+
+- Factors represent categorical data. 
+
+```{r}
+sex <- factor(c("male", "female", "female", "male"))
+```
+
+### Levels
+
+```{r}
+levels(sex)  # name of levels
+
+nlevels(sex) #number of levels
+```
+
+```{r}
+sex # current order
+```
+### Ordering
+
+```{r}
+sex <- factor(sex, levels = c("male", "female"))
+sex # after re-ordering
+```
+
+### Converting factors
+
+```{r}
+as.character(sex)
+
+as.factor(sex)
+```
+### Year factorize
+
+```{r}
+year_fct <- factor(c(1990, 1983, 1977, 1998, 1990))
+as.numeric(year_fct)               # Wrong! And there is no warning...
+as.numeric(as.character(year_fct)) # Works...
+as.numeric(levels(year_fct))[year_fct]    # The recommended way.
+```
+### Renaming factors
+
+```{r}
+plot(surveys$sex)
+```
+
+### Head
+
+```{r}
+sex <- surveys$sex
+head(sex)
+```
+
+## Levels
+
+```{r}
+levels(sex)
+
+```
+
+```{r}
+levels(sex)[1] <- "NA"
+levels(sex)
+```
+## Date formatting
+
+```{r}
+str(surveys)
+```
+
+```{r}
+library(lubridate)
+```
+
+### Create a new date
+
+```{r}
+new_date <- ymd("2015-01-01")
+str(new_date)
+
+
+# mdy()
+# dmy()
+```
+### Merge Dates
+
+```{r}
+# paste() - combine two entity or columns
+
+surveys$date <- ymd(paste(surveys$year, surveys$month, surveys$day, sep = "-"))
+
+surveys$date
+```
+
+```{r}
+summary(surveys$date)
+```
+## Missing dates
+
+```{r}
+missing_dates <- surveys[is.na(surveys$date), c("year", "month", "day")]
+
+head(missing_dates)
+```
+
+# Data Manipulation in R
+
+
+```{r}
+surveys <- read_csv("data/survey.csv")
+```
+
+```{r}
+str(surveys)
+```
+
+```{r}
+View(surveys)
+```
+
+## Dplyr functions
+
+- select(): subset columns
+- filter(): subset rows on conditions
+- mutate(): create new columns by using information from other columns
+- group_by() and summarize(): create summary statistics on grouped data
+- arrange(): sort results
+- count(): count discrete values
+
+## Selecting columns and filtering rows
+
+```{r}
+library(dplyr)
+names(surveys)
+
+select(surveys, plot_id, species_id, weight, sex)
+```
+
+### Deselect columns
+
+```{r}
+select(surveys, -record_id, -species_id) ## using - for deselect  
+```
+
+### Filter rows
+
+```{r}
+filter(surveys, year == 1978, sex == "M")
+```
+
+## Using %>% pipes %>% (ctrl + shift + m)
+
+```{r}
+surveys %>%
+  filter(year == 1978) %>%
+  select(species_id, sex, weight, year)
+```
+## Save the result
+
+```{r}
+surveys_sml <- surveys %>%
+  filter(weight < 5) %>%
+  select(species_id, sex, weight)
+
+```
+
+```{r}
+surveys_sml
+```
+
+## Mutate - creating new variable
+
+```{r}
+surveys %>%
+  mutate(weight_kg = weight / 1000)
+```
+
+```{r}
+surveys %>%
+  mutate(weight_kg = weight / 1000,
+         weight_lb = weight_kg * 2.2)
+```
+
+
+```{r}
+surveys %>%
+  mutate(weight_kg = weight / 1000) %>%
+  head()
+```
+
+
+### Remove missing value
+```{r}
+surveys %>%
+  filter(!is.na(weight)) %>%
+  mutate(weight_kg = weight / 1000) %>%
+  head()
+```
+## Grouping and Summarize data
+
+```{r}
+surveys %>%
+  group_by(sex) %>%
+  summarize(mean_weight = mean(weight, na.rm = TRUE))
+```
+
+```{r}
+surveys %>%
+  group_by(sex, species_id, plot_id) %>%
+  summarize(mean_weight = mean(weight, na.rm = TRUE))
+```
+
+## Arrange
+
+```{r}
+surveys %>%
+  filter(!is.na(weight)) %>%
+  group_by(sex, species_id) %>%
+  summarize(mean_weight = mean(weight),
+            min_weight = min(weight)) %>%
+  arrange(desc(mean_weight))
+```
+
+## Counting
+
+```{r}
+surveys %>%
+    count(sex) 
+```
+## Similar to above
+
+```{r}
+surveys %>%
+    group_by(sex) %>%
+    summarise(count = n())
+```
+## Sort / Arrange in count
+
+```{r}
+surveys %>%
+    count(weight, sort = F) 
+```
+
+```{r}
+surveys %>%
+  count(sex, species) 
+```
+## Arrange
+
+```{r}
+surveys %>%
+  count(sex, species) %>%
+  arrange(species, desc(n))
+```
+
+```{r}
+surveys_gw <- surveys %>%
+  filter(!is.na(weight)) %>%
+  group_by(genus, plot_id) %>%
+  summarize(mean_weight = mean(weight))
+
+str(surveys_gw)
+```
+
+## Exporting data
+
+```{r}
+surveys_complete <- surveys %>%
+  filter(!is.na(weight),           # remove missing weight
+         !is.na(hindfoot_length),  # remove missing hindfoot_length
+         !is.na(sex))                # remove missing sex
+```
+
+## Saving Data
+
+```{r}
+surveys_complete
+
+write_csv(surveys_complete, "./data/surveys_complete.csv")
+```
+
