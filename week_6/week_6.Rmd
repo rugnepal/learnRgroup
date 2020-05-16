@@ -1,8 +1,10 @@
 ---
-title: "Learning R with Group - Week 5"
+title: "Learning R with Group - Week 6"
 author: "Binod"
 date: "4/26/2020"
 output: html_document
+editor_options: 
+  chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
@@ -18,7 +20,9 @@ knitr::opts_chunk$set(
 ```{r}
 library(tidyverse)
 
-surveys_complete <- read_csv(file.choose())
+# surveys_complete <- read_csv(file.choose())
+
+surveys_complete <- read_csv("data/surveys_complete.csv")
 ```
 
 
@@ -38,6 +42,12 @@ species	| species of animal
 taxon	| e.g. Rodent, Reptile, Bird, Rabbit
 plot_type	| type of plot
 
+
+### Structure
+
+```{r}
+str(surveys_complete)
+```
 
 ## ggplot2 - grammar of graphics
  
@@ -60,12 +70,14 @@ ggplot(data = surveys_complete, aes(x = weight, y = hindfoot_length))
 - It's graphical representations of points
 
 * `geom_point()` for scatter plots, dot plots, etc.
-* `geom_boxplot()` for, well, boxplots!
+* `geom_boxplot()` boxplots
 * `geom_line()` for trend lines, time series, etc.  
 
 ```{r}
-ggplot(data = surveys_complete, aes(x = weight, y = hindfoot_length)) +
-  geom_point()
+ggplot(data = surveys_complete, 
+       mapping = aes(x = weight, y = hindfoot_length)) +
+  geom_point(size = 0.2) +
+  labs(title = "Tile", subtitle = "Subtile", caption = "Source")
 ```
 
 # Assign plot to a variable
@@ -76,52 +88,53 @@ surveys_plot <- ggplot(data = surveys_complete,
 
 # Draw the plot
 surveys_plot + 
-    geom_point()
+    geom_point() 
+    
 ```
  ## Add transparency (alpha) to avoid overplotting
 
 ```{r}
 surveys_plot + 
-    geom_point(alpha = 0.1)
+    geom_point(alpha = 0.1, size = 0.5)
 ```
+## Adding color
 
 ```{r}
 surveys_plot + 
-    geom_point(alpha = 0.1)
+    geom_point(alpha = 0.1, color = "red", size = 0.4)
 ```
+
+## Colorize by Category
+
 
 ```{r}
 surveys_plot + 
-    geom_point(alpha = 0.1, color = "red")
+    geom_point(alpha = 0.5, aes(color = species_id), size = 0.5)
 ```
-
-```{r}
-surveys_plot + 
-    geom_point(alpha = 0.1, aes(color = species_id))
-```
-
+## Jitter
 
 ```{r}
 surveys_plot +
-    geom_jitter(alpha = 0.1, aes(color = species_id))
+    geom_jitter(alpha = 0.3, aes(color = species_id))
 ```
-
 ## Boxplot
 
 We can use boxplots to visualize the distribution of weight within each species:
 
 ```{r}
-ggplot(data = surveys_complete, mapping = aes(x = species_id, y = weight)) +
+ggplot(data = surveys_complete, 
+       mapping = aes(x = species_id, y = weight)) +
     geom_boxplot()
 
 # survey_plot <- ggplot(data = surveys_complete, mapping = aes(x = species_id, y = weight))
 
 ```
+## Boxplot and Jitter
 
 ```{r}
-survey_plot +
+surveys_plot +
     geom_boxplot(alpha = 0) +
-    geom_jitter(alpha = 0.3, color = "tomato")
+    geom_jitter(alpha = 0.3, size = 0.5, color = "red")
 ```
 
 ## Plotting time series data
@@ -133,26 +146,29 @@ survey_plot +
 ```{r}
 yearly_counts <- surveys_complete %>%
   count(year, genus)
-```
 
+# yearly_counts
+```
+## Yearlt line chart
 
 ```{r}
-ggplot(data = yearly_counts, mapping = aes(x = year, y = n)) +
+ggplot(data = yearly_counts, 
+       mapping = aes(x = year, y = n)) +
      geom_line()
 ```
 
 
 ```{r}
-ggplot(data = yearly_counts, mapping = aes(x = year, y = n, group = genus)) +
+ggplot(data = yearly_counts, 
+       mapping = aes(x = year, y = n, group = genus)) +
     geom_line()
 ```
 
 ```{r}
-ggplot(data = yearly_counts, mapping = aes(x = year, y = n, color = genus)) +
+ggplot(data = yearly_counts, 
+       mapping = aes(x = year, y = n, color = genus)) +
     geom_line()
 ```
-
-
 ## Faceting
 
 It allows the user to split one plot into multiple plots based on a factor included in the dataset.
@@ -163,12 +179,13 @@ There are two types of facet functions:
 * facet_grid() - form a matrix of rows and columns of panels.
 
 
+### Facet wrap
+
 ```{r}
 ggplot(data = yearly_counts, mapping = aes(x = year, y = n)) +
     geom_line() +
     facet_wrap(facets = vars(genus))
 ```
-
 
 ## Yearly sex counts
 
@@ -181,7 +198,10 @@ yearly_sex_counts <- surveys_complete %>%
 ### Faceted plot by splitting further by sex using color (within each panel
 
 ```{r}
-ggplot(data = yearly_sex_counts, mapping = aes(x = year, y = n, color = sex)) +
+facet_yearly_sex_counts <- ggplot(data = yearly_sex_counts, 
+       mapping = aes(x = year, y = n, color = sex))
+
+facet_yearly_sex_counts +
   geom_line() +
   facet_wrap(facets =  vars(genus))
 ```
@@ -192,8 +212,7 @@ Using facet_grid() to control how panels are organized (rows and columns)
 
 
 ```{r}
-ggplot(data = yearly_sex_counts, 
-       mapping = aes(x = year, y = n, color = sex)) +
+facet_yearly_sex_counts +
   geom_line() +
   facet_grid(rows = vars(sex), cols =  vars(genus))
 ```
@@ -210,8 +229,7 @@ ggplot(data = yearly_sex_counts,
 
 ```{r}
 # One row, facet by column
-ggplot(data = yearly_sex_counts, 
-       mapping = aes(x = year, y = n, color = sex)) +
+facet_yearly_sex_counts +
   geom_line() +
   facet_grid(cols = vars(genus))
 ```
@@ -219,15 +237,13 @@ ggplot(data = yearly_sex_counts,
 ## ggplot2 themes
 
 ```{r}
- ggplot(data = yearly_sex_counts, 
-     mapping = aes(x = year, y = n, color = sex)) +
+ facet_yearly_sex_counts +
      geom_line() +
      facet_wrap(vars(genus)) +
-     theme_bw()
+     theme_bw()  # themes
 ```
 
 ## Do it yourself
-
 
 Create a plot that depicts how the average weight of each species changes through the years.
 
@@ -241,69 +257,45 @@ ggplot(data = yearly_weight, mapping = aes(x=year, y=avg_weight)) +
    theme_bw()
 ```
 
-## Customize
+## Customize  
 
 ```{r}
-ggplot(data = yearly_sex_counts, mapping = aes(x = year, y = n, color = sex)) +
+p_yearly_sex_count <- facet_yearly_sex_counts +
     geom_line() +
     facet_wrap(vars(genus)) +
     labs(title = "Observed genera through time",
          x = "Year of observation",
          y = "Number of individuals") +
     theme_bw()
+
+p_yearly_sex_count 
 ```
+
 ## Readability - Increase font size
 
 ```{r}
-
-ggplot(data = yearly_sex_counts, mapping = aes(x = year, y = n, color = sex)) +
-    geom_line() +
-    facet_wrap(vars(genus)) +
-    labs(title = "Observed genera through time",
-        x = "Year of observation",
-        y = "Number of individuals") +
-    theme_bw() +
-    theme(text=element_text(size = 16))
-
+p_yearly_sex_count +
+    theme(text = element_text(size = 16))
 ```
-
+## Rotate the labels of x-axis
 
 ```{r}
 # install.packages("extrafont") # for windows users
 
-ggplot(data = yearly_sex_counts, mapping = aes(x = year, y = n, color = sex)) +
-    geom_line() +
-    facet_wrap(vars(genus)) +
-    labs(title = "Observed genera through time",
-        x = "Year of observation",
-        y = "Number of individuals") +
-    theme_bw() +
-    theme(axis.text.x = element_text(colour = "grey20", size = 12, angle = 90, hjust = 0.5, vjust = 0.5),
-                        axis.text.y = element_text(colour = "grey20", size = 12),
-          text = element_text(size = 16))
+p_yearly_sex_count +
+    theme(axis.text.x = element_text(colour = "grey20", 
+                                     size = 12, angle = 90, 
+                                     hjust = 0.5, vjust = 0.5),
+         axis.text.y = element_text(colour = "grey20", size = 12),
+         text = element_text(size = 16))
 ```
-
-## Rotate the labels of x-axis
-
-```{r}
-ggplot(data = yearly_sex_counts, mapping = aes(x = year, y = n, color = sex)) +
-    geom_line() +
-    facet_wrap(vars(genus)) +
-    labs(title = "Observed genera through time",
-        x = "Year of observation",
-        y = "Number of individuals") +
-    theme_bw() +
-    theme(axis.text.x = element_text(colour = "grey20", size = 12, angle = 90, hjust = 0.5, vjust = 0.5),
-                        axis.text.y = element_text(colour = "grey20", size = 12),
-          text = element_text(size = 16))
-```
-
 
 ## Define custom theme
 
 ```{r}
 # define custom theme
-grey_theme <- theme(axis.text.x = element_text(colour = "grey20", size = 12, angle = 90, hjust = 0.5, vjust = 0.5),
+grey_theme <- theme(axis.text.x = element_text(colour = "grey20", size = 12, angle = 90, 
+                                               hjust = 0.5, vjust = 0.5),
                           axis.text.y = element_text(colour = "grey20", size = 12),
                           text = element_text(size = 16))
 
@@ -313,6 +305,9 @@ ggplot(surveys_complete, aes(x = species_id, y = hindfoot_length)) +
     grey_theme
 ```
 
+
+### Combine plots
+
 ```{r}
 # install.packages("gridExtra")
 
@@ -321,7 +316,7 @@ library(gridExtra)
 spp_weight_boxplot <- ggplot(data = surveys_complete, 
                              mapping = aes(x = genus, y = weight)) +
   geom_boxplot() +
-  scale_y_log10() +
+  scale_y_log10() +  ## log scale in y-axis
   labs(x = "Genus", y = "Weight (g)") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
@@ -336,6 +331,6 @@ grid.arrange(spp_weight_boxplot, spp_count_plot, ncol = 2, widths = c(4, 6))
 ```{r}
 # grid.arrange() plots
 combo_plot <- grid.arrange(spp_weight_boxplot, spp_count_plot, ncol = 2, widths = c(4, 6))
+
 ggsave("combo_plot_abun_weight.png", combo_plot, width = 10, dpi = 300)
 ```
-
