@@ -15,10 +15,14 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Load Package
+## Load Packages
 
 ```{r}
 # install.packages("rtweet")
+# install.packages("tm")
+# install.packages("SnowballC")
+# install.packages("wordcloud") 
+# install.packages("RColorBrewer") 
 
 library(rtweet)
 ```
@@ -42,11 +46,11 @@ twitter_token <- create_token(app, key, secret, access_token, access_secret, set
 ## Search Tweets
 
 ```{r}
-# tweet_covid19_np <- search_tweets(q = "#COVID19Nepal", 
-#                              n = 2000, 
-#                              token = twitter_token, 
-#                              include_rts = FALSE, 
-#                              lang = "en")
+tweet_covid19_np <- search_tweets(q = "#COVID19Nepal",
+                             n = 2000,
+                             token = twitter_token,
+                             include_rts = FALSE,
+                             lang = "en")
 
 tweet_covid19_np
 
@@ -87,9 +91,15 @@ readr::write_csv(tweet_df, "./data/tweet_nepal.csv")
 ## Load the data as a corpus
 
 ```{r}
-library(tm)
+## load data from GitHub
 
-txt <- Corpus(VectorSource())
+library(readr)
+tweet_df <- read_csv("https://raw.githubusercontent.com/rugnepal/learnRgroup/master/week_7/data/tweet_nepal.csv")
+
+## Text mining package load
+
+library(tm)
+txt <- Corpus(VectorSource(tweet_df))
 ```
 
 ## See what's inside
@@ -106,8 +116,8 @@ inspect(txt)
 makeSpace <- content_transformer(function (x , pattern ) gsub(pattern, " ", x))
 
 txt <- tm_map(txt, makeSpace, "/")
-txt <- (txt, makeSpace, "@")
-txt <- (txt, makeSpace, "\\|")
+txt <- tm_map(txt, makeSpace, "@")
+txt <- tm_map(txt, makeSpace, "\\|")
 ```
 
 ## Cleaning the text
@@ -115,19 +125,22 @@ txt <- (txt, makeSpace, "\\|")
 ```{r}
 # Convert the text to lower case
 txt <- tm_map(txt, content_transformer(tolower))
+
 # Remove numbers
 txt <- tm_map(txt, removeNumbers)
+
 # Remove english common stopwords
 txt <- tm_map(txt, removeWords, stopwords("english"))
+
 # Remove your own stop word
 # specify your stopwords as a character vector
-txt <- tm_map(txt, removeWords, c())  # "https", "tco", "countri"
+txt <- tm_map(txt, removeWords, c("hello", "https", "tco", "countri", "will", "like", "new", "amp"))  # 
 # Remove punctuations
-txt <- tm_map(txt, removePunctuation)
+txt <- tm_map(txt, removePunctuation)  # , ", '
 # Eliminate extra white spaces
 txt <- tm_map(txt, stripWhitespace)
 # Text stemming
-txt <- tm_map(txt, stemDocument)
+txt <- tm_map(txt, stemDocument)  # help, helping, helps, helped
 ```
 
 ## Build a term-document matrix
@@ -135,10 +148,20 @@ txt <- tm_map(txt, stemDocument)
 ```{r}
 dtm <- TermDocumentMatrix(txt)
 m <- as.matrix(dtm)
-v <- sort(rowSums(m),decreasing=TRUE)
-d <- data.frame(word = names(v),freq=v)
-head(d, 10)
+v <- sort(rowSums(m), decreasing=TRUE)
+d <- data.frame(word = names(v), freq=v)
+head(d, 5)
 ```
+## Boxplot
+
+```{r}
+library(ggplot2)
+
+ggplot(head(d, 10), aes(x = word, y = freq)) +
+  geom_col()
+```
+
+
 
 ## Create the Word cloud
 
@@ -147,8 +170,12 @@ set.seed(101)
 
 library(wordcloud)
 
-wordcloud(words = d$word, freq = d$freq, min.freq = 1,
-          max.words=200, random.order=FALSE, rot.per=0.35, 
+wordcloud(words = d$word, 
+          freq = d$freq, 
+          min.freq = 1,
+          max.words=200, 
+          random.order=FALSE, 
+          rot.per=0.35, 
           colors=brewer.pal(8, "Dark2"))
 ```
 
