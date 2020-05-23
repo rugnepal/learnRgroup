@@ -1,0 +1,154 @@
+---
+title: "Week 7 - Learning R with Group"
+author: "Binod"
+date: "4/26/2020"
+output: html_document
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+```
+
+## Load Package
+
+```{r}
+# install.packages("rtweet")
+
+library(rtweet)
+```
+
+## Set your Tokens
+
+```{r}
+## Guide how to obtain twitter API keys
+### https://cran.r-project.org/web/packages/rtweet/vignettes/auth.html
+
+## Keys and Secrets:
+key = ""
+secret = ""
+access_token = ""
+access_secret = ""
+app = "covid-sentiment"
+
+twitter_token <- create_token(app, key, secret, access_token, access_secret, set_renv = FALSE)
+```
+
+## Search Tweets
+
+```{r}
+# tweet_covid19_np <- search_tweets(q = "#COVID19Nepal", 
+#                              n = 2000, 
+#                              token = twitter_token, 
+#                              include_rts = FALSE, 
+#                              lang = "en")
+
+tweet_covid19_np
+
+```
+
+
+```{r}
+tweet_nepal <- search_tweets(q = "#nepal", 
+                             n = 2000, 
+                             type = "recent",
+                             token = twitter_token, 
+                             include_rts = FALSE, 
+                             lang = "en")
+
+# rt <- search_tweets(
+#   "#nepal", n = 100000, 
+#   retryonratelimit = T
+# )
+
+```
+
+## Filter/Select Data
+
+```{r}
+library(dplyr)
+
+tweet_df <- tweet_nepal %>% 
+  filter(source == "Twitter Web Client" | 
+         source == "Twitter Web App" |
+         source == "Twitter for Android" | 
+         source == "Twitter for iPhone", 
+         is_retweet == FALSE) %>%
+  select(text)
+
+readr::write_csv(tweet_df, "./data/tweet_nepal.csv")  
+```
+
+## Load the data as a corpus
+
+```{r}
+library(tm)
+
+txt <- Corpus(VectorSource())
+```
+
+## See what's inside
+
+```{r}
+inspect(txt)
+```
+
+## Text transformation
+
+> Replacing '/', “@” and “|” with space:
+
+```{r}
+makeSpace <- content_transformer(function (x , pattern ) gsub(pattern, " ", x))
+
+txt <- tm_map(txt, makeSpace, "/")
+txt <- (txt, makeSpace, "@")
+txt <- (txt, makeSpace, "\\|")
+```
+
+## Cleaning the text
+
+```{r}
+# Convert the text to lower case
+txt <- tm_map(txt, content_transformer(tolower))
+# Remove numbers
+txt <- tm_map(txt, removeNumbers)
+# Remove english common stopwords
+txt <- tm_map(txt, removeWords, stopwords("english"))
+# Remove your own stop word
+# specify your stopwords as a character vector
+txt <- tm_map(txt, removeWords, c())  # "https", "tco", "countri"
+# Remove punctuations
+txt <- tm_map(txt, removePunctuation)
+# Eliminate extra white spaces
+txt <- tm_map(txt, stripWhitespace)
+# Text stemming
+txt <- tm_map(txt, stemDocument)
+```
+
+## Build a term-document matrix
+
+```{r}
+dtm <- TermDocumentMatrix(txt)
+m <- as.matrix(dtm)
+v <- sort(rowSums(m),decreasing=TRUE)
+d <- data.frame(word = names(v),freq=v)
+head(d, 10)
+```
+
+## Create the Word cloud
+
+```{r}
+set.seed(101)
+
+library(wordcloud)
+
+wordcloud(words = d$word, freq = d$freq, min.freq = 1,
+          max.words=200, random.order=FALSE, rot.per=0.35, 
+          colors=brewer.pal(8, "Dark2"))
+```
+
