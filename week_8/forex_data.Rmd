@@ -1,0 +1,113 @@
+---
+title: "Forex Data"
+author: "Binod"
+date: "5/30/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Load data 
+
+```{r}
+# Ctrl + Alt + i
+
+library(jsonlite)
+
+
+forex_data <- read_json("forex_data.json", 
+                        simplifyDataFrame = TRUE, # converts dataframe
+                        flatten=T) # converts nested list to table
+
+forex_data
+```
+
+
+## Select Data 
+
+```{r}
+library(dplyr)
+library(janitor)
+
+# ncol(forex_data)
+
+forex_data <- forex_data %>% select(1, 6:ncol(forex_data)) %>% clean_names()
+
+View(forex_data)
+```
+
+## Pivoting 
+
+```{r}
+library(tidyr)
+
+buy <- forex_data %>% select(date, ends_with("buy"))
+sell <- forex_data %>% select(date, ends_with("sell"))
+
+
+
+buy <- buy %>% pivot_longer(cols = 2:ncol(buy))
+
+sell <- sell %>% pivot_longer(cols = 2:ncol(sell))
+
+
+new_df <- bind_cols(buy, sell) %>% clean_names() %>% select(1, 2, 3, 6)
+  # rename("date_1" = "date", names_2 = "country", value_3 = "buy_rate", value_6= "sell_rate")
+
+names(new_df) <- c("date", "country", "buy", "sell")
+
+n <- new_df %>% mutate(
+  country = case_when(country == "rates_cad_buy" ~ "CAD", 
+                      country == "rates_sgd_buy" ~ "SGD",
+                      country == "rates_jpy_buy	" ~ "JPY")
+  
+) 
+
+
+n <- n %>% 
+  filter(country == "CAD" | country == "SGD")
+
+n$date <- as.Date(n$date)
+
+n
+
+
+
+```
+
+## Data type conversion
+
+```{r}
+# library(lubridate)
+
+df$date <- as.Date(df$date)
+df$value <- as.double(df$value)
+
+df
+```
+
+
+## Data manipulation
+
+```{r}
+df 
+```
+
+
+
+## Visualize
+
+```{r}
+n$buy <- as.double(n$buy)
+n$sell <- as.double(n$sell)
+n$country <- as.factor(n$country)
+
+library(ggplot2)
+
+ggplot(n, aes(x = date, y = buy, group = country, color = country)) +
+  geom_line()
+```
+

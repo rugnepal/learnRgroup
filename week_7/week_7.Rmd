@@ -161,8 +161,6 @@ ggplot(head(d, 10), aes(x = word, y = freq)) +
   geom_col()
 ```
 
-
-
 ## Create the Word cloud
 
 ```{r}
