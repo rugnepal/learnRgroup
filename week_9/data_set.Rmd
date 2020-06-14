@@ -1,0 +1,53 @@
+---
+title: "Untitled"
+author: "Binod"
+date: "6/13/2020"
+output: 
+  html_document:
+    keep_md: yes
+    df_print: paged
+    theme: readable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Data set name
+
+This data is taken from [Tidytuesday](https://github.com/rfordatascience/tidytuesday).
+
+```{r}
+library(tidyverse)
+
+library(readxl)
+```
+
+## Data Load
+
+
+```{r pressure, echo=FALSE}
+library(readr)
+
+
+food_consumption <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-02-18/food_consumption.csv') 
+
+write_csv(food_consumption, "food_consumption.csv")
+
+global_mortality <- read_excel("global_mortality.xlsx") %>% janitor::clean_names()
+
+# Malaria
+malaria_deaths <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-11-13/malaria_deaths.csv")
+
+
+```
+
+## 
+
+```{r}
+library(ggplot2)
+```
+
+
+
+
