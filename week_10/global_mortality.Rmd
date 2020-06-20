@@ -1,0 +1,94 @@
+---
+title: "Global Mortality"
+author: "Binod"
+date: "6/20/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Global Mortality Rate
+
+
+```{r}
+library(readxl)
+library(dplyr)
+```
+
+
+```{r}
+global_mortality <- read_excel("../week_9/global_mortality.xlsx") %>% janitor::clean_names()
+
+global_mortality
+```
+## Check structure
+
+```{r}
+str(global_mortality)
+```
+
+## Latest year of data
+
+```{r}
+max(global_mortality$year)
+
+min(global_mortality$year)
+```
+
+### Which country had more mortality with hepatities in 2016 ?
+
+```{r}
+global_mortality %>% 
+  mutate(year = as.Date(year, format = "%m/%d/%y"))
+
+
+# 
+# 
+# 
+# lubridate::ymd(yrs, truncated = 2L)
+# 
+# global_mortality  %>% 
+#   mutate(year = lubridate::ymd(year))
+#   
+library(ggplot2)
+
+global_mortality %>% 
+  select(hepatitis_percent, year, country) %>% 
+  filter(year == 2016, hepatitis_percent > 0.25) %>%
+  top_n(10) %>% 
+  ggplot(aes(x = country, y = hepatitis_percent)) +
+  geom_col() +
+  coord_flip() +
+  bbplot::bbc_style()
+  
+
+boxplot(global_mortality$hepatitis_percent)
+
+```
+
+### Which continent had more diabetes percent in 2015?
+
+```{r}
+library(countrycode)
+
+global_mortality$continent <- countrycode(sourcevar = global_mortality$country_code, origin = "iso3c", destination = "continent")
+
+global_mortality <- global_mortality %>% select(continent, everything())
+
+
+#######################################3
+
+global_mortality <- global_mortality %>% 
+  mutate(continent = countrycode::countrycode(sourcevar = country_code, origin = "iso3c", destination = "continent")) %>% 
+  select(continent, everything()) 
+
+
+## OWID_WRL
+
+
+
+```
+
+

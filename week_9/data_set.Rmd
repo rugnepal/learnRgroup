@@ -29,7 +29,7 @@ library(readxl)
 
 ```{r pressure, echo=FALSE}
 library(readr)
-
+library(readxl)
 
 food_consumption <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-02-18/food_consumption.csv') 
 
@@ -40,13 +40,6 @@ global_mortality <- read_excel("global_mortality.xlsx") %>% janitor::clean_names
 # Malaria
 malaria_deaths <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-11-13/malaria_deaths.csv")
 
-
-```
-
-## 
-
-```{r}
-library(ggplot2)
 ```
 
 
