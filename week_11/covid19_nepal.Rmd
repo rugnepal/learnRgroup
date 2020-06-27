@@ -1,0 +1,85 @@
+---
+title: "Covid19 Pandemics nepal"
+author: "Binod"
+date: "6/27/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+```
+
+## Load libraries
+
+```{r}
+library(rvest)
+library(stringr)
+library(dplyr)
+library(lubridate)
+```
+
+### Pull data from Wikipedia
+
+```{r}
+webpage <- read_html("https://en.wikipedia.org/wiki/COVID-19_pandemic_in_Nepal")
+
+covid19_nepal <- webpage %>% 
+  html_node(xpath = '//*[@id="mw-content-text"]/div/table[9]') %>% 
+  html_table(fill = TRUE)
+```
+
+### Rename columns / delete rows
+
+```{r}
+names(covid19_nepal) <- c("date", "confirmed_total", "confirmed_new", "confirmed_active", "recoveries_total", "recoveries_new", "deaths_total", 
+                          "deaths_new", "rt_pcr_tests_total", "rt_pcr_tests_new", "ref")
+
+## delete first row
+covid19_nepal <- covid19_nepal[-1,] 
+
+
+```
+
+### Structure of Data
+
+```{r}
+str(covid19_nepal)
+```
+### Change Data Type
+
+```{r}
+
+covid19_nepal$date <- str_c(covid19_nepal$date, " 2020") #stringr
+
+covid19_nepal$date <- dmy(covid19_nepal$date) #lubridate
+
+covid19_nepal$confirmed_total 
+
+
+# covid19_nepal <- covid19_nepal %>% mutate(confirmed_new = gsub("+", "", covid19_nepal$confirmed_new))
+
+# str_replace_all(covid19_nepal$confirmed_new, "+", "")
+
+
+# ?gsub
+```
+
+### Remove commas and plus
+
+```{r}
+
+```
+
+# Create visualizations
+
+```{r}
+# https://en.wikipedia.org/wiki/COVID-19_pandemic_in_Nepal
+```
+
+
+
+
